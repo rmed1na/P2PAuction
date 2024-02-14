@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+service AuctionHandler {
+	rpc Initialize (AuctionData) returns (AuctionData);
+	rpc PlaceBid (BidData) returns (BidData);
+}
+
+message AuctionData {
+	string auction_id = 1;
+	string item = 2;
+	double price = 3;
+	string user_name = 4;
+}
+
+message BidData {
+	string auction_id = 1;
+	double amount = 2;
+	string bidder = 3;
+}

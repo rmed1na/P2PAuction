@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+service PeerHandler {
+	rpc GetConnectedPeers (GetConnectedPeersRequest) returns (GetConnectedPeersResponse);
+}
+
+message ConnectedPeer {
+	string address = 1;
+	string name = 2;
+	int32 port = 3;
+}
+
+message GetConnectedPeersRequest {
+	ConnectedPeer requesting_peer = 1;
+}
+
+message GetConnectedPeersResponse {
+	repeated ConnectedPeer peers = 1;
+}
