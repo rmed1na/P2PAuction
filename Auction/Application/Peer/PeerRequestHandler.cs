@@ -13,22 +13,32 @@ namespace Auction.Application.Peer
             _peerRepository = peerRepository;
         }
 
-        public async Task GetConnectedPeersAsync(PeerModel requestingPeer, int fellowPeerPort)
+        public async Task PingFellowPeer(PeerModel requestingPeer, int fellowPeerPort)
         {
+            var requestingKnownPeer = new KnownPeer
+            {
+                Address = requestingPeer.Address,
+                Name = requestingPeer.Name
+            };
+
             var channel = new Channel($"localhost:{fellowPeerPort}", ChannelCredentials.Insecure);
             var peerClient = new PeerHandler.PeerHandlerClient(channel);
-            var connectedPeers = peerClient.GetConnectedPeers(new GetConnectedPeersRequest
+            var connectedPeers = peerClient.Ping(new PingRequest
             {
-                RequestingPeer = new ConnectedPeer
-                {
-                    Address = requestingPeer.Address,
-                    Name = requestingPeer.Name
-                }
+                RequestingPeer = requestingKnownPeer
             });
 
-            foreach (var connectedPeer in connectedPeers.Peers)
+            foreach (var connectedPeer in connectedPeers.KnownPeers)
             {
                 requestingPeer.AddConnectedPeerIfNotExists(connectedPeer.Address, connectedPeer.Name);
+
+                var peerChannel = new Channel(connectedPeer.Address, ChannelCredentials.Insecure);
+                var fellowPeerClient = new PeerHandler.PeerHandlerClient(peerChannel);
+
+                fellowPeerClient.Ping(new PingRequest
+                {
+                    RequestingPeer = requestingKnownPeer
+                });
             }
 
             await channel.ShutdownAsync();

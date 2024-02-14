@@ -43,6 +43,9 @@ namespace Auction
                     case "auction -c":
                         AuctionComplete();
                         break;
+
+                    // From here, mostly for debugging purposes.
+                    // Not really needed for the actual work of the auction system but nice-to-have.
                     case "peer -l":
                         PeersList();
                         break;
@@ -125,7 +128,7 @@ namespace Auction
             var answer = Console.ReadLine();
             var acceptedAnswers = new string[] { "Y", "N" };
 
-            if (string.IsNullOrEmpty(answer) || acceptedAnswers.Contains(answer.ToUpper()))
+            if (string.IsNullOrEmpty(answer) || !acceptedAnswers.Contains(answer.ToUpper()))
             {
                 Console.WriteLine("Invalid answer");
                 return;

@@ -58,7 +58,7 @@ Console.WriteLine($"Server listening on port: {peer.Port}\n");
 Console.Write("Provide the port of a fellow peer (If none just press enter): ");
 
 if (int.TryParse(Console.ReadLine(), out int fellowPeerPort))
-    await peerRequestHandler.GetConnectedPeersAsync(peer, fellowPeerPort);
+    await peerRequestHandler.PingFellowPeer(peer, fellowPeerPort);
 
 Console.WriteLine($"Connected peers: {peer.ConnectedPeers.Count}\n");
 #endregion
