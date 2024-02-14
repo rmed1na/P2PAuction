@@ -12,14 +12,14 @@ namespace Auction.Services
             _peer = peer;
         }
 
-        public override async Task<GetConnectedPeersResponse> GetConnectedPeers(GetConnectedPeersRequest request, ServerCallContext context)
+        public override async Task<PingResponse> Ping(PingRequest request, ServerCallContext context)
         {
             _peer.AddConnectedPeerIfNotExists(request.RequestingPeer.Address, request.RequestingPeer.Name);
-            var response = new GetConnectedPeersResponse
+            var response = new PingResponse
             {
-                Peers =
+                KnownPeers =
                 {
-                    _peer.ConnectedPeers.Select(i => new ConnectedPeer
+                    _peer.ConnectedPeers.Select(i => new KnownPeer
                     {
                         Address = i.Key,
                         Name = i.Value

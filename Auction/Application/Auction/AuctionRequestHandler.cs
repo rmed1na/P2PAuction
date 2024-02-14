@@ -19,43 +19,47 @@ namespace Auction.Application.Auction
 
         public void Initialize(string item, double price, string author)
         {
-            var auction = new AuctionModel(item, price, author);
-            _auctionRepository.AddAuction(auction);
-
+            var auctionId = Guid.NewGuid().ToString()[30..].ToUpper();
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
             {
                 var channel = new Channel(connectedPeer.Key, ChannelCredentials.Insecure);
                 var client = new AuctionHandler.AuctionHandlerClient(channel);
                 client.Initialize(new AuctionData
                 {
-                    AuctionId = auction.FriendlyId,
-                    Item = auction.Item,
-                    Price = auction.Price,
-                    UserName = auction.Author
+                    AuctionId = auctionId,
+                    Item = item,
+                    Price = price,
+                    Author = author
                 });
             }
         }
 
-        public void SetBid(string auctionFriendlyId, double amount, string author)
+        public void PlaceBid(string auctionId, double amount, string author)
         {
-            var bid = new AuctionBid
-            {
-                AuctionFriendlyId = auctionFriendlyId,
-                Amount = amount,
-                Bidder = author
-            };
-
-            _auctionRepository.AddBid(bid);
-
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
             {
                 var channel = new Channel(connectedPeer.Key, ChannelCredentials.Insecure);
                 var client = new AuctionHandler.AuctionHandlerClient(channel);
                 client.PlaceBid(new BidData
                 {
-                    AuctionId = bid.AuctionFriendlyId,
-                    Amount = bid.Amount,
-                    Bidder = bid.Bidder
+                    AuctionId = auctionId,
+                    Amount = amount,
+                    Bidder = author
+                });
+            }
+        }
+
+        public void Complete(AuctionModel auction, AuctionBid highestBid)
+        {
+            foreach (var connectedPeer in _authorPeer.ConnectedPeers)
+            {
+                var channel = new Channel(connectedPeer.Key, ChannelCredentials.Insecure);
+                var client = new AuctionHandler.AuctionHandlerClient(channel);
+                client.Complete(new CompletionData
+                {
+                    AuctionId = auction.Id,
+                    HighestBidder = highestBid.Bidder,
+                    Price = highestBid.Amount
                 });
             }
         }

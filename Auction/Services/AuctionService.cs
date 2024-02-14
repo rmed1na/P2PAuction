@@ -14,35 +14,51 @@ namespace Auction.Services
             _auctionRepository = auctionRepository;
         }
 
-        public override async Task<AuctionData> Initialize(AuctionData request, ServerCallContext context)
+        public override async Task<AuctionData> Initialize(AuctionData data, ServerCallContext context)
         {
-            Console.WriteLine($"{request.UserName} initialized auction {request.AuctionId} for item '{request.Item}' at ${request.Price}");
+            Console.WriteLine($" >> {data.Author} initialized auction {data.AuctionId} for item '{data.Item}' at ${data.Price}");
 
             var auction = new AuctionModel
             {
-                Item = request.Item,
-                Price = request.Price,
-                Author = request.UserName,
-                FriendlyId = request.AuctionId
+                Id = data.AuctionId,
+                Item = data.Item,
+                Price = data.Price,
+                Author = data.Author,
+                Status = AuctionStatusCode.Open
             };
 
             _auctionRepository.AddAuction(auction);
 
-            return request;
+            return data;
         }
 
-        public override async Task<BidData> PlaceBid(BidData request, ServerCallContext context)
+        public override async Task<BidData> PlaceBid(BidData data, ServerCallContext context)
         {
-            Console.WriteLine($"{request.Bidder} has placed a new bid for {request.Amount} in auction {request.AuctionId}");
+            Console.WriteLine($" >> {data.Bidder} has placed a new bid for {data.Amount} in auction {data.AuctionId}");
 
             _auctionRepository.AddBid(new AuctionBid
             {
-                AuctionFriendlyId = request.AuctionId,
-                Amount = request.Amount,
-                Bidder = request.Bidder
+                AuctionId = data.AuctionId,
+                Amount = data.Amount,
+                Bidder = data.Bidder
             });
 
-            return request;
+            return data;
+        }
+
+        public override async Task<CompletionData> Complete(CompletionData data, ServerCallContext context)
+        {
+            Console.WriteLine($" >> Auction {data.AuctionId} has been completed. Highest bidder: {data.HighestBidder}. Amount: {data.Price}");
+
+            var auction = _auctionRepository.GetAuction(data.AuctionId);
+
+            if (auction != null)
+            {
+                auction.Status = AuctionStatusCode.Closed;
+                _auctionRepository.UpdateAuction(auction);
+            }
+
+            return data;
         }
     }
 }

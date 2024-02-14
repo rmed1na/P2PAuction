@@ -2,26 +2,20 @@
 {
     public class Auction
     {
-        public Guid Id { get; set; }
-        public string? FriendlyId { get; set; }
+        public string Id { get; set; } = string.Empty;
         public string? Item { get; set; }
         public double Price { get; set; }
-        public string? Author { get; set; }
+        public string Author { get; set; } = string.Empty;
+        public AuctionStatusCode Status { get; set; } = AuctionStatusCode.Unknown;
         public List<AuctionBid> Bids { get; set; } = [];
 
-        public Auction() 
-        {
-            Id = Guid.NewGuid();
-            FriendlyId = Id.ToString()[30..].ToUpper();
-        }
+        public Auction() { }
 
-        public Auction(string item, double price, string author)
+        public AuctionBid? GetHighestBid()
         {
-            Id = Guid.NewGuid();
-            FriendlyId = Id.ToString()[30..].ToUpper();
-            Item = item;
-            Price = price;
-            Author = author;
+            return Bids
+                .OrderByDescending(x => x.Amount)
+                .FirstOrDefault();
         }
     }
 }
