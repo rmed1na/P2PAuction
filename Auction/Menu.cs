@@ -19,7 +19,7 @@ namespace Auction
             _peer = peer;
             _peerRepository = peerRepository;
             _auctionRepository = auctionRepository;
-            _auctionRequestHandler = new AuctionRequestHandler(_peer, _auctionRepository);
+            _auctionRequestHandler = new AuctionRequestHandler(_peer);
         }
 
         public void Start()

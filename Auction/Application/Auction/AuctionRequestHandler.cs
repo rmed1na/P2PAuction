@@ -9,15 +9,13 @@ namespace Auction.Application.Auction
     public class AuctionRequestHandler
     {
         private readonly PeerModel _authorPeer;
-        private readonly IAuctionRepository _auctionRepository;
 
-        public AuctionRequestHandler(PeerModel authorPeer, IAuctionRepository auctionRepository)
+        public AuctionRequestHandler(PeerModel authorPeer)
         {
             _authorPeer = authorPeer;
-            _auctionRepository = auctionRepository;
         }
 
-        public void Initialize(string item, double price, string author)
+        public async void Initialize(string item, double price, string author)
         {
             var auctionId = Guid.NewGuid().ToString()[30..].ToUpper();
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
@@ -31,10 +29,12 @@ namespace Auction.Application.Auction
                     Price = price,
                     Author = author
                 });
+
+                await channel.ShutdownAsync();
             }
         }
 
-        public void PlaceBid(string auctionId, double amount, string author)
+        public async void PlaceBid(string auctionId, double amount, string author)
         {
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
             {
@@ -46,10 +46,12 @@ namespace Auction.Application.Auction
                     Amount = amount,
                     Bidder = author
                 });
+
+                await channel.ShutdownAsync();
             }
         }
 
-        public void Complete(AuctionModel auction, AuctionBid highestBid)
+        public async void Complete(AuctionModel auction, AuctionBid highestBid)
         {
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
             {
@@ -61,6 +63,8 @@ namespace Auction.Application.Auction
                     HighestBidder = highestBid.Bidder,
                     Price = highestBid.Amount
                 });
+
+                await channel.ShutdownAsync();
             }
         }
     }

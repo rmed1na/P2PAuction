@@ -18,7 +18,7 @@ var repositories = new
     peer = serviceProvider.GetRequiredService<IPeerRepository>(),
     auction = serviceProvider.GetRequiredService<IAuctionRepository>()
 };
-var peerRequestHandler = new PeerRequestHandler(repositories.peer);
+var peerRequestHandler = new PeerRequestHandler();
 #endregion
 
 Console.WriteLine("Welcome to the P2P auction system\n\n");

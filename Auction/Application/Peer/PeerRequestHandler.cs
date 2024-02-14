@@ -6,13 +6,6 @@ namespace Auction.Application.Peer
 {
     public class PeerRequestHandler
     {
-        private readonly IPeerRepository _peerRepository;
-
-        public PeerRequestHandler(IPeerRepository peerRepository)
-        {
-            _peerRepository = peerRepository;
-        }
-
         public async Task PingFellowPeer(PeerModel requestingPeer, int fellowPeerPort)
         {
             var requestingKnownPeer = new KnownPeer
@@ -39,6 +32,8 @@ namespace Auction.Application.Peer
                 {
                     RequestingPeer = requestingKnownPeer
                 });
+
+                await peerChannel.ShutdownAsync();
             }
 
             await channel.ShutdownAsync();
