@@ -19,7 +19,7 @@ namespace Auction
             _peer = peer;
             _peerRepository = peerRepository;
             _auctionRepository = auctionRepository;
-            _auctionRequestHandler = new AuctionRequestHandler(_peer, _auctionRepository);
+            _auctionRequestHandler = new AuctionRequestHandler(_peer);
         }
 
         public void Start()
@@ -50,6 +50,12 @@ namespace Auction
                         break;
                     case "peer -l":
                         PeersList();
+                        break;
+                    case "clear":
+                        Console.Clear();
+                        break;
+                    case "help":
+                        Help();
                         break;
                     default:
                         break;
@@ -181,6 +187,18 @@ namespace Auction
             {
                 Console.WriteLine($" -> {peer.Value} @ {peer.Key}");
             }
+        }
+
+        private static void Help()
+        {
+            Console.WriteLine("List of commands in this CLI: ");
+            Console.WriteLine("auction -i -> Initializes a new auction. An auction ID will be provided. Keep it close.");
+            Console.WriteLine("auction -b -> Places a new bid into an existing auction.");
+            Console.WriteLine("auction -c -> Completes an ongoing auction.");
+            Console.WriteLine("auction -l -> Lists all the existing auctions.");
+            Console.WriteLine("peer -l -> Lists all the existing known peers.");
+            Console.WriteLine("clear -> Clears the console");
+            Console.WriteLine("help -> Need more help? Feel free to reach out to @rmed1na :)");
         }
     }
 }

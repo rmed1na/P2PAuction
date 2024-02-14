@@ -18,7 +18,7 @@ var repositories = new
     peer = serviceProvider.GetRequiredService<IPeerRepository>(),
     auction = serviceProvider.GetRequiredService<IAuctionRepository>()
 };
-var peerRequestHandler = new PeerRequestHandler(repositories.peer);
+var peerRequestHandler = new PeerRequestHandler();
 #endregion
 
 Console.WriteLine("Welcome to the P2P auction system\n\n");
@@ -44,11 +44,10 @@ try
     var server = new Server
     {
         Services =
-    {
-        Message.BindService(new MessageService()),
-        PeerHandler.BindService(new PeerService(peer)),
-        AuctionHandler.BindService(new AuctionService(repositories.auction))
-    },
+        {
+            PeerHandler.BindService(new PeerService(peer)),
+            AuctionHandler.BindService(new AuctionService(repositories.auction))
+        },
         Ports = { new ServerPort("localhost", peer.Port, ServerCredentials.Insecure) }
     };
 
