@@ -44,11 +44,11 @@ try
     var server = new Server
     {
         Services =
-    {
-        Message.BindService(new MessageService()),
-        PeerHandler.BindService(new PeerService(peer)),
-        AuctionHandler.BindService(new AuctionService(repositories.auction))
-    },
+        {
+            Message.BindService(new MessageService()),
+            PeerHandler.BindService(new PeerService(peer)),
+            AuctionHandler.BindService(new AuctionService(repositories.auction))
+        },
         Ports = { new ServerPort("localhost", peer.Port, ServerCredentials.Insecure) }
     };
 
