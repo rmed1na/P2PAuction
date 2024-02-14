@@ -15,6 +15,12 @@ namespace Auction.Application.Auction
             _authorPeer = authorPeer;
         }
 
+        /// <summary>
+        /// Initializes a new auction
+        /// </summary>
+        /// <param name="item">The item to be set into auction</param>
+        /// <param name="price">The item price set by the auction author</param>
+        /// <param name="author">The author or creator of this auction</param>
         public async void Initialize(string item, double price, string author)
         {
             var auctionId = Guid.NewGuid().ToString()[30..].ToUpper();
@@ -34,6 +40,12 @@ namespace Auction.Application.Auction
             }
         }
 
+        /// <summary>
+        /// Places a new bid into an auction
+        /// </summary>
+        /// <param name="auctionId">Auction unique identifier</param>
+        /// <param name="amount">Amount of the bid to be sent</param>
+        /// <param name="author">Author sending the new bid</param>
         public async void PlaceBid(string auctionId, double amount, string author)
         {
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
@@ -51,6 +63,11 @@ namespace Auction.Application.Auction
             }
         }
 
+        /// <summary>
+        /// Completes/closes an open auction
+        /// </summary>
+        /// <param name="auction">Auction unique identifier</param>
+        /// <param name="highestBid">Highest bid registry</param>
         public async void Complete(AuctionModel auction, AuctionBid highestBid)
         {
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)

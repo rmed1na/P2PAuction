@@ -21,10 +21,10 @@ namespace Auction.Data.Repositories
             SaveData(_auctionsKey, auctions);
         }
 
-        public AuctionModel? GetAuction(string friendlyId)
+        public AuctionModel? GetAuction(string auctionId)
         {
             var auctions = GetCurrentAuctions();
-            return auctions.FirstOrDefault(x => x.Id.ToUpper() == friendlyId.ToUpper());
+            return auctions.FirstOrDefault(x => x.Id.ToUpper() == auctionId.ToUpper());
         }
 
         public void AddBid(AuctionBid bid)
