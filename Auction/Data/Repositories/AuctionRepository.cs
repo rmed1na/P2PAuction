@@ -29,7 +29,7 @@ namespace Auction.Data.Repositories
 
         public void AddBid(AuctionBid bid)
         {
-            var auction = GetCurrentAuctions().First(x => x.Id == bid.AuctionFriendlyId);
+            var auction = GetCurrentAuctions().First(x => x.Id == bid.AuctionId);
             auction.Bids.Add(bid);
         }
 
@@ -47,7 +47,7 @@ namespace Auction.Data.Repositories
             SaveData(_auctionsKey, auctions);
         }
 
-        private List<AuctionModel> GetCurrentAuctions()
+        public List<AuctionModel> GetCurrentAuctions()
             => _cache.Get<List<AuctionModel>>(_auctionsKey) ?? [];
 
         private void SaveData<T>(string key, T value)

@@ -26,6 +26,7 @@ namespace Auction.Application.Auction
                 Author = author,
                 Status = AuctionStatusCode.Open
             };
+
             _auctionRepository.AddAuction(auction);
 
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
@@ -42,11 +43,11 @@ namespace Auction.Application.Auction
             }
         }
 
-        public void PlaceBid(string auctionFriendlyId, double amount, string author)
+        public void PlaceBid(string auctionId, double amount, string author)
         {
             var bid = new AuctionBid
             {
-                AuctionFriendlyId = auctionFriendlyId,
+                AuctionId = auctionId,
                 Amount = amount,
                 Bidder = author
             };
@@ -59,14 +60,14 @@ namespace Auction.Application.Auction
                 var client = new AuctionHandler.AuctionHandlerClient(channel);
                 client.PlaceBid(new BidData
                 {
-                    AuctionId = bid.AuctionFriendlyId,
+                    AuctionId = bid.AuctionId,
                     Amount = bid.Amount,
                     Bidder = bid.Bidder
                 });
             }
         }
 
-        public void Complete(AuctionModel auction)
+        public void Complete(AuctionModel auction, AuctionBid highestBid)
         {
             auction.Status = AuctionStatusCode.Closed;
 
@@ -75,6 +76,13 @@ namespace Auction.Application.Auction
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
             {
                 var channel = new Channel(connectedPeer.Key, ChannelCredentials.Insecure);
+                var client = new AuctionHandler.AuctionHandlerClient(channel);
+                client.Complete(new CompletionData
+                {
+                    AuctionId = auction.Id,
+                    HighestBidder = highestBid.Bidder,
+                    Price = highestBid.Amount
+                });
             }
         }
     }

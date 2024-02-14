@@ -2,7 +2,7 @@
 {
     public class AuctionBid
     {
-        public string? AuctionFriendlyId { get; set; }
+        public string? AuctionId { get; set; }
         public double Amount { get; set; }
         public string? Bidder { get; set; }
     }

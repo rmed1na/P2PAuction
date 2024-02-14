@@ -37,7 +37,7 @@ namespace Auction.Services
 
             _auctionRepository.AddBid(new AuctionBid
             {
-                AuctionFriendlyId = data.AuctionId,
+                AuctionId = data.AuctionId,
                 Amount = data.Amount,
                 Bidder = data.Bidder
             });

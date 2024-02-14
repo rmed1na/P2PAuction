@@ -29,7 +29,6 @@ namespace Auction
             {
                 Console.WriteLine($"\n[{_peer.Name}] [Connected peers: {_peer.ConnectedPeers.Count} @ {DateTime.Now}]");
                 Console.WriteLine("Choose an action command: ");
-                Console.Write(" > ");
                 command = Console.ReadLine();
 
                 switch (command)
@@ -46,6 +45,9 @@ namespace Auction
 
                     // From here, mostly for debugging purposes.
                     // Not really needed for the actual work of the auction system but nice-to-have.
+                    case "auction -l":
+                        AuctionList();
+                        break;
                     case "peer -l":
                         PeersList();
                         break;
@@ -91,6 +93,12 @@ namespace Auction
                 return;
             }
 
+            if (auction.Status != AuctionStatusCode.Open)
+            {
+                Console.WriteLine($"Auction {auction.Id} is already closed");
+                return;
+            }
+
             Console.Write("Enter the bid amount: ");
 
             if (!double.TryParse(Console.ReadLine(), out double bidAmount))
@@ -123,7 +131,7 @@ namespace Auction
             }
 
             Console.WriteLine($"Auction {auctionId}'s highest bidder is {highestBid.Bidder} with {highestBid.Amount} for product '{auction.Item}'");
-            Console.Write("Do you wish to complete the auction now? (Y/N)");
+            Console.Write("Do you wish to complete the auction now? (Y/N) > ");
 
             var answer = Console.ReadLine();
             var acceptedAnswers = new string[] { "Y", "N" };
@@ -136,11 +144,21 @@ namespace Auction
 
             if (answer.Equals("Y", StringComparison.InvariantCultureIgnoreCase))
             {
-                _auctionRequestHandler.Complete(auction);
+                _auctionRequestHandler.Complete(auction, highestBid);
             }
             else if (answer.Equals("N", StringComparison.InvariantCultureIgnoreCase))
             {
                 Console.WriteLine("Bidding continues...");
+            }
+        }
+
+        private void AuctionList()
+        {
+            var auctions = _auctionRepository.GetCurrentAuctions();
+            Console.WriteLine("List of current auctions: ");
+            foreach (var auction in auctions)
+            {
+                Console.WriteLine($" -> ID: {auction.Id} | Author: {auction.Author} | Bids: {auction.Bids.Count} | Status: {auction.Status.ToString()}");
             }
         }
 
