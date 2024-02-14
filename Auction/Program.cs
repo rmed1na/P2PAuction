@@ -39,19 +39,35 @@ if (!int.TryParse(Console.ReadLine(), out int peerPort))
 }
 
 var peer = new Peer(peerPort, peerName);
-var server = new Server
+try
 {
-    Services =
+    var server = new Server
+    {
+        Services =
     {
         Message.BindService(new MessageService()),
         PeerHandler.BindService(new PeerService(peer)),
         AuctionHandler.BindService(new AuctionService(repositories.auction))
     },
-    Ports = { new ServerPort("localhost", peer.Port, ServerCredentials.Insecure) }
-};
+        Ports = { new ServerPort("localhost", peer.Port, ServerCredentials.Insecure) }
+    };
 
-server.Start();
-Console.WriteLine($"Server listening on port: {peer.Port}\n");
+    server.Start();
+    Console.WriteLine($"Server listening on port: {peer.Port}\n");
+}
+catch (IOException ioEx)
+{
+    _ = ioEx; // Debugging
+    Console.WriteLine($"Error starting server. Maybe the port is already in use, try a different one. Message: {ioEx.Message}");
+    Console.WriteLine("Press any key to exit");
+    Console.ReadKey();
+    return;
+}
+catch (Exception ex)
+
+{
+    Console.WriteLine($"Error starting server: {ex.Message}");
+}
 #endregion
 
 #region Connection to peers

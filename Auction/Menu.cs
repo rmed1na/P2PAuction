@@ -99,6 +99,12 @@ namespace Auction
                 return;
             }
 
+            if (auction.Author.Equals(_peer.Name, StringComparison.InvariantCultureIgnoreCase))
+            {
+                Console.WriteLine("You're the auction author. The author can't bid in his/her own auction. Play fair :)");
+                return;
+            }
+
             Console.Write("Enter the bid amount: ");
 
             if (!double.TryParse(Console.ReadLine(), out double bidAmount))
@@ -158,7 +164,7 @@ namespace Auction
             Console.WriteLine("List of current auctions: ");
             foreach (var auction in auctions)
             {
-                Console.WriteLine($" -> ID: {auction.Id} | Author: {auction.Author} | Bids: {auction.Bids.Count} | Status: {auction.Status.ToString()}");
+                Console.WriteLine($" -> ID: {auction.Id} | Author: {auction.Author} | Item: {auction.Item} | Bids: {auction.Bids.Count} | Status: {auction.Status}");
             }
         }
 

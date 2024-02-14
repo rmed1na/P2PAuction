@@ -16,14 +16,15 @@ namespace Auction.Services
 
         public override async Task<AuctionData> Initialize(AuctionData data, ServerCallContext context)
         {
-            Console.WriteLine($" >> {data.UserName} initialized auction {data.AuctionId} for item '{data.Item}' at ${data.Price}");
+            Console.WriteLine($" >> {data.Author} initialized auction {data.AuctionId} for item '{data.Item}' at ${data.Price}");
 
             var auction = new AuctionModel
             {
                 Id = data.AuctionId,
                 Item = data.Item,
                 Price = data.Price,
-                Author = data.UserName,
+                Author = data.Author,
+                Status = AuctionStatusCode.Open
             };
 
             _auctionRepository.AddAuction(auction);

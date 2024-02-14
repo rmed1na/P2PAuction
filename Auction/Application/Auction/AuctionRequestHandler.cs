@@ -19,26 +19,17 @@ namespace Auction.Application.Auction
 
         public void Initialize(string item, double price, string author)
         {
-            var auction = new AuctionModel
-            {
-                Item = item,
-                Price = price,
-                Author = author,
-                Status = AuctionStatusCode.Open
-            };
-
-            _auctionRepository.AddAuction(auction);
-
+            var auctionId = Guid.NewGuid().ToString()[30..].ToUpper();
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
             {
                 var channel = new Channel(connectedPeer.Key, ChannelCredentials.Insecure);
                 var client = new AuctionHandler.AuctionHandlerClient(channel);
                 client.Initialize(new AuctionData
                 {
-                    AuctionId = auction.Id,
-                    Item = auction.Item,
-                    Price = auction.Price,
-                    UserName = auction.Author
+                    AuctionId = auctionId,
+                    Item = item,
+                    Price = price,
+                    Author = author
                 });
             }
         }
