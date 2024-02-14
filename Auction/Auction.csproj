@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <None Remove="Protos\auction.proto" />
-    <None Remove="Protos\message.proto" />
     <None Remove="Protos\peer.proto" />
   </ItemGroup>
 
@@ -27,7 +26,6 @@
 
   <ItemGroup>
     <Protobuf Include="Protos\auction.proto" />
-    <Protobuf Include="Protos\message.proto" />
     <Protobuf Include="Protos\peer.proto" />
   </ItemGroup>
 

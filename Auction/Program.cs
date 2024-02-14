@@ -45,7 +45,6 @@ try
     {
         Services =
         {
-            Message.BindService(new MessageService()),
             PeerHandler.BindService(new PeerService(peer)),
             AuctionHandler.BindService(new AuctionService(repositories.auction))
         },
