@@ -36,34 +36,21 @@ namespace Auction.Application.Auction
 
         public void PlaceBid(string auctionId, double amount, string author)
         {
-            var bid = new AuctionBid
-            {
-                AuctionId = auctionId,
-                Amount = amount,
-                Bidder = author
-            };
-
-            _auctionRepository.AddBid(bid);
-
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
             {
                 var channel = new Channel(connectedPeer.Key, ChannelCredentials.Insecure);
                 var client = new AuctionHandler.AuctionHandlerClient(channel);
                 client.PlaceBid(new BidData
                 {
-                    AuctionId = bid.AuctionId,
-                    Amount = bid.Amount,
-                    Bidder = bid.Bidder
+                    AuctionId = auctionId,
+                    Amount = amount,
+                    Bidder = author
                 });
             }
         }
 
         public void Complete(AuctionModel auction, AuctionBid highestBid)
         {
-            auction.Status = AuctionStatusCode.Closed;
-
-            _auctionRepository.UpdateAuction(auction);
-
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
             {
                 var channel = new Channel(connectedPeer.Key, ChannelCredentials.Insecure);

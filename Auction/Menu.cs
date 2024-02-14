@@ -128,6 +128,12 @@ namespace Auction
                 return;
             }
 
+            if (auction.Status != AuctionStatusCode.Open)
+            {
+                Console.WriteLine($"Illegal status transition in auction {auction.Id}. Can't move from {auction.Status} to {AuctionStatusCode.Closed}");
+                return;
+            }
+
             var highestBid = auction.GetHighestBid();
 
             if (highestBid == null)
