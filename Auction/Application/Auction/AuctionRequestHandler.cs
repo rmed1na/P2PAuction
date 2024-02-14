@@ -19,7 +19,13 @@ namespace Auction.Application.Auction
 
         public void Initialize(string item, double price, string author)
         {
-            var auction = new AuctionModel(item, price, author);
+            var auction = new AuctionModel
+            {
+                Item = item,
+                Price = price,
+                Author = author,
+                Status = AuctionStatusCode.Open
+            };
             _auctionRepository.AddAuction(auction);
 
             foreach (var connectedPeer in _authorPeer.ConnectedPeers)
@@ -28,7 +34,7 @@ namespace Auction.Application.Auction
                 var client = new AuctionHandler.AuctionHandlerClient(channel);
                 client.Initialize(new AuctionData
                 {
-                    AuctionId = auction.FriendlyId,
+                    AuctionId = auction.Id,
                     Item = auction.Item,
                     Price = auction.Price,
                     UserName = auction.Author
@@ -36,7 +42,7 @@ namespace Auction.Application.Auction
             }
         }
 
-        public void SetBid(string auctionFriendlyId, double amount, string author)
+        public void PlaceBid(string auctionFriendlyId, double amount, string author)
         {
             var bid = new AuctionBid
             {
@@ -57,6 +63,18 @@ namespace Auction.Application.Auction
                     Amount = bid.Amount,
                     Bidder = bid.Bidder
                 });
+            }
+        }
+
+        public void Complete(AuctionModel auction)
+        {
+            auction.Status = AuctionStatusCode.Closed;
+
+            _auctionRepository.UpdateAuction(auction);
+
+            foreach (var connectedPeer in _authorPeer.ConnectedPeers)
+            {
+                var channel = new Channel(connectedPeer.Key, ChannelCredentials.Insecure);
             }
         }
     }

@@ -5,6 +5,7 @@ import "google/protobuf/wrappers.proto";
 service AuctionHandler {
 	rpc Initialize (AuctionData) returns (AuctionData);
 	rpc PlaceBid (BidData) returns (BidData);
+	rpc Complete (CompletionData) returns (CompletionData);
 }
 
 message AuctionData {
@@ -18,4 +19,10 @@ message BidData {
 	string auction_id = 1;
 	double amount = 2;
 	string bidder = 3;
+}
+
+message CompletionData {
+	string auction_id = 1;
+	string highest_bidder = 2;
+	double price = 3;
 }

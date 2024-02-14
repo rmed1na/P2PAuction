@@ -1,4 +1,4 @@
-﻿using Auction.Application.Auction;
+﻿using Auction;
 using Auction.Application.Peer;
 using Auction.Data.Models;
 using Auction.Data.Repositories;
@@ -41,7 +41,7 @@ if (!int.TryParse(Console.ReadLine(), out int peerPort))
 var peer = new Peer(peerPort, peerName);
 var server = new Server
 {
-    Services = 
+    Services =
     {
         Message.BindService(new MessageService()),
         PeerHandler.BindService(new PeerService(peer)),
@@ -55,72 +55,23 @@ Console.WriteLine($"Server listening on port: {peer.Port}\n");
 #endregion
 
 #region Connection to peers
-Console.Write("Provide the port of a fellow peer (optional): ");
+Console.Write("Provide the port of a fellow peer (If none just press enter): ");
 
 if (int.TryParse(Console.ReadLine(), out int fellowPeerPort))
     await peerRequestHandler.GetConnectedPeersAsync(peer, fellowPeerPort);
 
 Console.WriteLine($"Connected peers: {peer.ConnectedPeers.Count}\n");
 #endregion
+
 Console.Clear();
-var auctionRequestHandler = new AuctionRequestHandler(peer, repositories.auction);
+
 #region Menu
-string? command;
-do
-{
-    Console.WriteLine($"\n[Connected peers: {peer.ConnectedPeers.Count}]");
-    Console.WriteLine("Choose an action command: ");
-    command = Console.ReadLine();
+var menu = new Menu(
+    peer,
+    repositories.peer,
+    repositories.auction);
 
-    switch (command)
-    {
-        case "auction -i":
-            Console.Write("\nEnter the item: ");
-            var item = Console.ReadLine();
-
-            if (string.IsNullOrEmpty(item))
-            {
-                Console.Write("Invalid item description/title");
-                break;
-            }
-
-            Console.Write("Enter the price: ");
-            var priceStr = Console.ReadLine();
-            
-            if (!double.TryParse(priceStr, out double price))
-            {
-                Console.Write("Invalid price");
-                break;
-            }
-
-            auctionRequestHandler.Initialize(item, price, peer.Name);
-            break;
-        case "bid":
-            Console.Write("Enter the auction friendly id: ");
-            var auctionId = Console.ReadLine();
-            var auction = repositories.auction.GetAuction(auctionId ?? string.Empty);
-            
-            if (auction == null || string.IsNullOrEmpty(auctionId))
-            {
-                Console.WriteLine("Invalid auction id");
-                break;
-            }
-
-            Console.Write("Enter the bid price: ");
-
-            if (!double.TryParse(Console.ReadLine(), out double bidPrice))
-            {
-                Console.WriteLine("Invalid bid price");
-                break;
-            }
-
-            auctionRequestHandler.SetBid(auctionId, bidPrice, peer.Name);
-            break;
-        default:
-            break;
-    }
-
-} while (!string.IsNullOrEmpty(command) && !command.Equals("exit"));
+menu.Start();
 
 Console.WriteLine("Press any key to exit");
 Console.ReadKey();
